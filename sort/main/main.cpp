@@ -4,7 +4,6 @@
 #include"../quick_sort/sort.hpp"
 #include"../bubble_sort/sort.hpp"
 #include"../select_sort/sort.hpp"
-#include<algorithm>
 #include<time.h>
 using namespace std;
 
