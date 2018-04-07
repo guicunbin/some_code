@@ -5,11 +5,20 @@
 #include"../bubble_sort/sort.hpp"
 #include"../select_sort/sort.hpp"
 #include"../insert_sort/sort.hpp"
+#include"../heap_sort/sort.hpp"
 #include<time.h>
 using namespace std;
 
-int main(){
-    int test_size = 100000;                 cout<<"test_size  ="<<test_size<<endl;
+int main(int argc, char *argv[]){
+    //int test_size = 10;                 
+    //cin>>test_size;
+    //cout<<"argc = "<<argc<<endl;
+    if(argc != 2){
+        cout<<"usage:  ./a.out test_size"<<endl;
+        return -1;
+    }
+    int test_size = atoi(argv[1]);
+    cout<<"test_size  ="<<test_size<<endl;
     bool is_print_vec = (test_size < 50);
 
 
@@ -33,6 +42,9 @@ int main(){
     cout<<"---------------------------------------------------         insert_sort"<<endl;
     test_vec = TEST_VEC;        print_sort_time(insert_sort, test_vec, is_print_vec);
 
+
+    cout<<"---------------------------------------------------         heap_sort"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(heap_sort, test_vec, is_print_vec);
 }
 
 
