@@ -2,7 +2,7 @@
 #include<iostream>
 #include<vector>
 #include<stdlib.h>
-//#include<stack>
+#include<stack>
 #include<utility>
 using namespace std;
 
@@ -64,12 +64,11 @@ vector<int> quick_sort_in_place_use_stack(vector<int>&nums){
     // random a val of the nums to put this val to correct index and make :  the max(left) <= this_val <= min(right)
     int n = nums.size();    if(n<=1) return nums;
     int left_index = 0, right_index = n-1;
-    //stack<pair<int,int>> vec_sta;
-    vector<pair<int,int>> vec_sta;
-    vec_sta.push_back(make_pair(left_index, right_index));
-    while(!vec_sta.empty()){
-        pair<int,int> back = vec_sta.back();  vec_sta.pop_back();
-        left_index = back.first, right_index = back.second;
+    stack<pair<int,int>> sta;
+    sta.push(make_pair(left_index, right_index));
+    while(!sta.empty()){
+        pair<int,int> top = sta.top();  sta.pop();
+        left_index = top.first, right_index = top.second;
         int pivot_index = rand() % (right_index - left_index + 1) + left_index;
         // after this swap;  the pivot_value = nums[right_index];
         swap(nums[pivot_index], nums[right_index]);
@@ -82,9 +81,9 @@ vector<int> quick_sort_in_place_use_stack(vector<int>&nums){
         // move the pivot_index to the split_point
         swap(nums[store_idx], nums[right_index]);
         if(left_index < store_idx - 1)
-            vec_sta.push_back(pair<int,int>{left_index, store_idx - 1});
+            sta.push(pair<int,int>{left_index, store_idx - 1});
         if(store_idx + 1 < right_index)
-            vec_sta.push_back(pair<int,int>{store_idx + 1, right_index});
+            sta.push(pair<int,int>{store_idx + 1, right_index});
     }
     return nums;
 }
