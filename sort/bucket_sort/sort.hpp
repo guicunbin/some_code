@@ -40,7 +40,7 @@ vector<int> bucket_sort(vector<int> &nums){
 
     /// ====================== define the BUCKET_NUM and BUCKET_STEP ====================
 
-    int BUCKET_NUM = n ;
+    int BUCKET_NUM = n <= (max_num - min_num + 1) ? n : (max_num - min_num + 1) ;
     int BUCKET_STEP = ceil((max_num - min_num + 1) / BUCKET_NUM);
     cout<<"BUCKET_NUM, BUCKET_STEP = "<<BUCKET_NUM<<","<<BUCKET_STEP<<endl;
 
