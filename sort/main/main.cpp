@@ -1,3 +1,4 @@
+#include<cmath>
 #include<iostream>
 #include<vector>
 #include"../../utils/utils.hpp"
@@ -6,6 +7,10 @@
 #include"../select_sort/sort.hpp"
 #include"../insert_sort/sort.hpp"
 #include"../heap_sort/sort.hpp"
+#include"../merge_sort/sort.hpp"
+#include"../count_sort/sort.hpp"
+#include"../bucket_sort/sort.hpp"
+#include"../radix_sort/sort.hpp"
 #include<time.h>
 using namespace std;
 
@@ -24,27 +29,55 @@ int main(int argc, char *argv[]){
 
     vector<int> TEST_VEC = get_rand_vec(test_size);
     vector<int> test_vec;
+    cout<<"TEST_VEC use memory == "<<(sizeof(int) * TEST_VEC.capacity()) * 1.0 / pow(10, 6) << " MB "<<endl;
 
+    cout<<endl<<endl<<"============ O(n**2) ============= "<<endl;
 
-
-    cout<<"---------------------------------------------------         quick_sort_use_extra_space"<<endl;
-    test_vec = TEST_VEC;        print_sort_time(quick_sort_use_extra_space, test_vec, is_print_vec);
-
-    cout<<"---------------------------------------------------         quick_sort_in_place"<<endl;
-    test_vec = TEST_VEC;        print_sort_time(quick_sort_in_place, test_vec, is_print_vec);
-
-    cout<<"---------------------------------------------------         bubble_sort"<<endl;
+    cout<<"===================================================         bubble_sort"<<endl;
     test_vec = TEST_VEC;        print_sort_time(bubble_sort, test_vec, is_print_vec);
 
-    cout<<"---------------------------------------------------         select_sort"<<endl;
+    cout<<"===================================================         select_sort"<<endl;
     test_vec = TEST_VEC;        print_sort_time(select_sort, test_vec, is_print_vec);
 
-    cout<<"---------------------------------------------------         insert_sort"<<endl;
+    cout<<"===================================================         insert_sort"<<endl;
     test_vec = TEST_VEC;        print_sort_time(insert_sort, test_vec, is_print_vec);
 
 
-    cout<<"---------------------------------------------------         heap_sort"<<endl;
-    test_vec = TEST_VEC;        print_sort_time(heap_sort, test_vec, is_print_vec);
-}
 
+
+
+    cout<<endl<<endl<<"============ O(n*log(n)) ============= "<<endl;
+
+    cout<<"===================================================         heap_sort"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(heap_sort, test_vec, is_print_vec);
+
+    //  cout<<"===================================================         quick_sort_use_extra_space"<<endl;
+    //  test_vec = TEST_VEC;        print_sort_time(quick_sort_use_extra_space, test_vec, is_print_vec);
+
+    //  cout<<"===================================================         quick_sort_in_place_use_stack"<<endl;
+    //  test_vec = TEST_VEC;        print_sort_time(quick_sort_in_place_use_stack, test_vec, is_print_vec);
+
+    cout<<"===================================================         quick_sort_in_place"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(quick_sort_in_place, test_vec, is_print_vec);
+
+    cout<<"===================================================         merge_sort"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(merge_sort, test_vec, is_print_vec);
+
+
+
+
+
+
+    cout<<endl<<endl<<"============ O(n) ============= "<<endl;
+
+    cout<<"===================================================         bucket_sort"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(bucket_sort, test_vec, is_print_vec);
+
+    cout<<"===================================================         radix_sort"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(radix_sort, test_vec, is_print_vec);
+
+    cout<<"===================================================         count_sort"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(count_sort, test_vec, is_print_vec);
+
+}
 
