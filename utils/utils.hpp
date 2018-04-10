@@ -8,6 +8,12 @@
 #include<stdexcept>
 using namespace std;
 
+
+vector<int> stl_sort(vector<int> &nums){
+    sort(nums.begin(), nums.end());
+    return nums;
+}
+
 struct ListNode{
     int val;
     ListNode * next;
@@ -100,6 +106,17 @@ vector<int> get_rand_vec(int test_size){
 
 
 
+
+
+
+
+void print_time_using(clock_t start, string commment){
+    cout<<commment<<(double(clock() - start)*1000) / CLOCKS_PER_SEC <<" ms"<<endl; 
+}
+
+
+
+
 void print_sort_time(vector<int> sort_func(vector<int>& ), vector<int> test_vec, bool is_print_vec){
     if (is_print_vec){
         cout<<"original = "<<endl; 
@@ -108,9 +125,9 @@ void print_sort_time(vector<int> sort_func(vector<int>& ), vector<int> test_vec,
 
     clock_t start = clock();
     //here the assignment is very Time-consuming; 1.5 % time  for bucket_sort
-    test_vec = sort_func(test_vec);
-    clock_t end   = clock();
-    cout<<"----------------------------------------------------------------- run_time = "<<double(end - start) / CLOCKS_PER_SEC<<endl;
+    //test_vec = sort_func(test_vec);
+    sort_func(test_vec);
+    print_time_using(start, "----------------------------------------------------------------- run_time = ");
 
     if (is_print_vec){
         cout<<"finally = "<<endl; 
@@ -127,9 +144,6 @@ void print_sort_time(vector<int> sort_func(vector<int>& ), vector<int> test_vec,
 
 
 
-void print_time_using(clock_t start, string commment){
-    cout<<commment<<double(clock() - start) / CLOCKS_PER_SEC <<" seconds "<<endl; 
-}
 
 
 #endif

@@ -11,6 +11,7 @@
 #include"../count_sort/sort.hpp"
 #include"../bucket_sort/sort.hpp"
 #include"../radix_sort/sort.hpp"
+#include"../shell_sort/sort.hpp"
 #include<time.h>
 using namespace std;
 
@@ -31,6 +32,12 @@ int main(int argc, char *argv[]){
     vector<int> test_vec;
     cout<<"TEST_VEC use memory == "<<(sizeof(int) * TEST_VEC.capacity()) * 1.0 / pow(10, 6) << " MB "<<endl;
 
+    cout<<"===================================================         stl_sort"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(stl_sort, test_vec, is_print_vec);
+
+
+
+
     cout<<endl<<endl<<"============ O(n**2) ============= "<<endl;
 
     cout<<"===================================================         bubble_sort"<<endl;
@@ -41,6 +48,11 @@ int main(int argc, char *argv[]){
 
     cout<<"===================================================         insert_sort"<<endl;
     test_vec = TEST_VEC;        print_sort_time(insert_sort, test_vec, is_print_vec);
+
+
+    cout<<"===================================================         shell_sort"<<endl;
+    test_vec = TEST_VEC;        print_sort_time(shell_sort, test_vec, is_print_vec);
+
 
 
 
