@@ -18,9 +18,9 @@ int main()
     //cout<<"exit()"<<endl; exit(0);
 
     //cout<<"start Forward  "<<endl;
-    clock_t start = clock();
+    //clock_t start = clock();
     conv1.Forward(bottom, top);
-    print_time_using(start, "conv1.Forward using time = ");
+    //print_time_using(start, "conv1.Forward using time = ");
 
 
 
