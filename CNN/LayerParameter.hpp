@@ -1,8 +1,6 @@
 //#ifndef _TEST_H_
 //#define _TEST_H_
 
-#include<vector>
-#include<string>
 #include"../utils/utils.hpp"
 using namespace std;
 
@@ -12,13 +10,9 @@ template <typename Dtype>
 class LayerParameter{
     public:
         typedef Dtype value_type;
-        typedef vector<vector<vector<Dtype>>> vec_3d;
-        typedef vector<vector<Dtype>> vec_2d;
         int kernel_size, stride, pad;
-        int in_channels, out_channels;
+        int out_channels;
         bool bias_term;
-        //vector<vec_3d> weight_mat;
-        //vector<Dtype> bias_mat;
         Dtype lr_w, lr_b;
         LayerType layer_type;
         filler weight_filler,   bias_filler;
@@ -29,7 +23,7 @@ class LayerParameter{
 
 
         LayerParameter(LayerType layer_type_ = LayerType::conv,
-                        int in_channels_ = 3, int out_channels_ = 3 ,
+                        int out_channels_ = 3 ,
                         int kernel_size_ = 2, int stride_ = 2, int pad_ = 0,
                         bool bias_term_  = false,
                         Dtype lr_w_ = 1, Dtype lr_b_ = 0.1, 
@@ -39,7 +33,7 @@ class LayerParameter{
                         Dtype bias_filler_constant_value_ = 0.0){
 
             layer_type = layer_type_;    
-            in_channels = in_channels_; out_channels = out_channels_;
+            out_channels = out_channels_;
             kernel_size = kernel_size_;
             stride = stride_;    pad = pad_;  lr_w = lr_w_;    lr_b = lr_b_;
             weight_filler = weight_filler_;  bias_filler = bias_filler_;
@@ -54,7 +48,6 @@ class LayerParameter{
             string bias_filler_str = bias_filler == filler::gaussian ? "gaussian" : "constant";
             cout<<"{---------------------------------------------------------"<<endl;
             cout<<"LayerType:                   "<<layer_type_str<<endl;
-            cout<<"in_channels:                 "<<in_channels<<endl;
             cout<<"out_channels:                "<<out_channels<<endl;
             cout<<"kernel_size:                 "<<kernel_size<<endl;
             cout<<"stride:                      "<<stride<<endl;
