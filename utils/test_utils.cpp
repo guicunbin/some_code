@@ -8,6 +8,8 @@
 //#define size_A row_A*col_A
 //#define size_B col_A*col_B
 //#define size_C row_A*col_B
+
+
 void test_CHECK_equal(){
     CHECK_equal_by_diff<double>(1e-6, 1.5e-6, " diff = 1e-6 ", 1e-6);
     CHECK_equal_by_diff<double>(1e-7, 1.2e-7, " diff = 1e-7 ", 1e-7);
@@ -32,54 +34,44 @@ void test_get_type_str(){
 }
 
 
-void get_conv_test_data(vector<MD_Vec<double>> &bs_in, vector<MD_Vec<double>> &bs_out, MD_Vec<double>& kernel){
+void get_conv_test_data(MD_Vec<double> &bs_in, MD_Vec<double> &bs_out, MD_Vec<double>& kernel){
     int C_in = 2,  H_in = 3, W_in = 3, stride = 1, kernel_size = 2, C_out = 3, pad = 0, bs = 1;
     int H_out = (H_in - kernel_size + 2*pad) / stride + 1;
     int W_out = (W_in - kernel_size + 2*pad) / stride + 1;
     //build  input
-    for(int i=0; i<bs; i++){
-        bs_in[i].data = {1,1,1,2,2,2,3,3,3,  10,10,10,20,20,20,30,30,30};
-        bs_in[i].diff = {1,0,0,0,0,0,0,0,-1,  1,  1,2,  0,0,0, 0,0,0};
-        bs_in[i].shape= {C_in, H_in, W_in};
-    }
+    bs_in.data = {1,1,1,2,2,2,3,3,3,  10,10,10,20,20,20,30,30,30};
+    bs_in.diff = {1,0,0,0,0,0,0,0,-1,  1,  1,2,  0,0,0, 0,0,0};
+    bs_in.shape= {bs, C_in, H_in, W_in};
     //build kernel 
     kernel.data= {1,1,1,1, 2,2,2,2,  1,1,1,1,  2,2,2,2,  1,1,1,1,  2,2,2,2};
     kernel.diff= {0,0,0,0, -1,2,1,0, 0,0,0,0,  1,1,1,0,  0,0,0,0,  0,0,1,0};
     kernel.shape={C_out, C_in, kernel_size, kernel_size};
     //init output
-    for(int i=0; i<bs; i++){
-        bs_out[i].shape = {C_out, H_out, W_out};
-        bs_out[i].data.resize(C_out*H_out*W_out);
-        bs_out[i].diff = {1,0,1,2,  1,0,0,1,  0,3,0,1};
-    }
+    bs_out.data.resize(C_out*H_out*W_out);
+    bs_out.diff = {1,0,1,2,  1,0,0,1,  0,3,0,1};
+    bs_out.shape= {bs,  C_out, H_out, W_out};
 }
 
 
-void get_softmax_test_data(vector<MD_Vec<double>> &logits, vector<MD_Vec<double>> &probs, vector<MD_Vec<double>> &labels){
-    //build  input
+void get_softmax_test_data(MD_Vec<double> &logits, MD_Vec<double> &probs, MD_Vec<double> &labels){
     int C_in_out = 3,   bs = 2;
-    vector<vector<double>> logits_data = {{1, 3, 1},  {1,  2, 2}};
-    vector<vector<double>> logits_diff = {{1, 1, 0},  {-1, 0, 2}};
-    vector<vector<double>> probs_data = {{1, 0, 0},  {0,  1, 0}};
-    vector<vector<double>> probs_diff = {{0, 2, 1},  {2,-1, 0}};
-    for(int i=0; i<bs; i++){
-        logits[i].data = logits_data[i];
-        logits[i].diff = logits_diff[i]; 
-        logits[i].shape= {C_in_out};
-    }
+    vector<double> logits_data = {1, 3, 1,  1,  2, 2};
+    vector<double> logits_diff = {1, 1, 0,  -1, 0, 2};
+    vector<double> probs_data = {1, 0, 0,  0,  1, 0};
+    vector<double> probs_diff = {0, 2, 1,  2,-1, 0};
+    //build  input
+    logits.data = logits_data;
+    logits.diff = logits_diff; 
+    logits.shape= {bs,  C_in_out};
     //init output
-    for(int i=0; i<bs; i++){
-        probs[i].data = probs_data[i];
-        probs[i].diff = probs_diff[i];
-        probs[i].shape= {C_in_out};
-    }
+    probs.data  = probs_data;
+    probs.diff  = probs_diff;
+    probs.shape = {bs,   C_in_out};
 
 
-    for(int i=0; i<bs; i++){
-        labels[i].data = probs_data[i];
-        labels[i].diff = probs_diff[i];
-        labels[i].shape= {C_in_out};
-    }
+    labels.data = probs_data;
+    labels.diff = probs_diff;
+    labels.shape= {bs,  C_in_out};
 }
 
 
@@ -198,10 +190,10 @@ void test_vec_address(){
     //  invalid conversion from ‘int*’ to ‘int’
     for(int i=0; i<10; i++){
         //cout<<"&vec_1d[i], vec_1d[i], p, *p = "<<&vec_1d[i]<<","<<vec_1d[i]<<";  "<<p<<","<<*p<<endl;
-        CHECK_equal(&vec_1d[i], p, num2str(__LINE__));
-        CHECK_equal(vec_1d[i], *p, num2str(__LINE__));
-        CHECK_equal((&vec_1d[i])+1, p+1, num2str(__LINE__));
-        //CHECK_equal(address_int, p, num2str(__LINE__));
+        CHECK_equal(&vec_1d[i], p, any2str(__LINE__));
+        CHECK_equal(vec_1d[i], *p, any2str(__LINE__));
+        CHECK_equal((&vec_1d[i])+1, p+1, any2str(__LINE__));
+        //CHECK_equal(address_int, p, any2str(__LINE__));
         //address_int += 4;
         p++;
     }
@@ -222,16 +214,16 @@ void test_load_txt_to_vector_string(){
 
 
 
-void test_num2str(){
+void test_any2str(){
     int num_int = 100;
     string expect_str = "100";
-    string s = num2str<int>(num_int);
+    string s = any2str<int>(num_int);
     CHECK_equal(s, expect_str);
 
 
     float num_float = 10.98;
     expect_str = "10.98";
-    s = num2str<float>(num_float);
+    s = any2str<float>(num_float);
     CHECK_equal(s, expect_str);
 }
 
@@ -296,7 +288,7 @@ void test_col2img_by_kernelmat(){
 
 
     expect_vec = {1,2,1,4,8,4,3,6,3,10,20,10,40,80,40,30,60,30};
-    print_vec_with_comment(new_vec3d, "new_vec3d =");
+    print_vec(new_vec3d, "new_vec3d =");
     CHECK_vector_equal_test_success(expect_vec, new_vec3d, __FUNCTION__);
 
 }
@@ -311,17 +303,17 @@ void test_compute_conv2d_by_mat_mul(){
     int C_in = 2,  H_in = 3, W_in = 3, stride = 1, kernel_size = 2, C_out = 3, pad = 0, bs = 1;
     int H_out = (H_in - kernel_size) / stride + 1;
     int W_out = (W_in - kernel_size) / stride + 1;
-    vector<MD_Vec<double> > bs_in(bs);
+    MD_Vec<double> bs_in({bs, C_in, H_in, W_in});
     MD_Vec<double> kernel({C_out, C_in, kernel_size, kernel_size});
-    vector<MD_Vec<double> > bs_out(bs);
+    MD_Vec<double> bs_out({bs, C_out, H_out, W_out});
     get_conv_test_data(bs_in, bs_out, kernel);
     // expect_vec
     vector<double> expect_vec = { 126,126,210,210,126,126,210,210,126,126,210,210 };
 
     // start conv2d 
-    compute_conv2d_by_mat_mul(bs_in,  bs_out, kernel, stride, pad);
+    compute_conv2d_by_mat_mul(&bs_in,  &bs_out, &kernel, stride, pad);
 
-    for(int i=0; i<bs; CHECK_vector_equal_test_success(expect_vec, bs_out[i++].data, __FUNCTION__));
+    CHECK_vector_equal_test_success(expect_vec, bs_out.data, __FUNCTION__);
 }
 
 
@@ -330,7 +322,7 @@ void test_transpose_matrix(){
 
     vector<double> nums = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
     vector<double> expect_vec = {1,3,5,7,9,11,13,15,2,4,6,8,10,12,14,16};
-    //print_vec_with_comment(nums, "shape = {8,2}");
+    //print_vec(nums, "shape = {8,2}");
     transpose_matrix(nums, {8,2});
 
     CHECK_vector_equal_test_success(expect_vec, nums, __FUNCTION__);
@@ -344,17 +336,19 @@ void test_transpose_matrix(){
 
 void test_compute_conv2d_by_7_for(){
     int C_in = 2,  H_in = 3, W_in = 3, stride = 1, kernel_size = 2, C_out = 3, pad = 0, bs = 1;
-    vector<MD_Vec<double> > bs_in(bs);
-    vector<MD_Vec<double> > bs_out(bs);
+    int H_out = (H_in - kernel_size + 2*pad) / stride + 1;
+    int W_out = (W_in - kernel_size + 2*pad) / stride + 1;
+    MD_Vec<double> bs_in({bs, C_in, H_in, W_in});
+    MD_Vec<double> bs_out({bs,C_out,H_out,W_out});
     MD_Vec<double> kernel({C_out, C_in, kernel_size, kernel_size});
     get_conv_test_data(bs_in, bs_out, kernel);
     // expect_vec
     vector<double> expect_vec = { 126,126,210,210,126,126,210,210,126,126,210,210 };
     // start conv2d 
-    compute_conv2d_by_7_for(bs_in,  bs_out, kernel, stride, pad);
+    compute_conv2d_by_7_for(&bs_in,  &bs_out, &kernel, stride, pad);
     //CHECK_vector_equal(expect_vec, bs_out[0].data);
     //cout <<"    "<<__FUNCTION__<<"    success finished "<<endl;
-    for(int i=0; i<bs; CHECK_vector_equal_test_success(expect_vec, bs_out[i++].data, __FUNCTION__));
+    CHECK_vector_equal_test_success(expect_vec, bs_out.data, __FUNCTION__);
 }
 
 
@@ -365,9 +359,9 @@ void test_compute_conv2d_by_mat_mul_backward(){
     int H_out = (H_in - kernel_size) / stride + 1;
     int W_out = (W_in - kernel_size) / stride + 1;
     //build  input
-    vector<MD_Vec<double> > bs_in(bs);
+    MD_Vec<double> bs_in({bs, C_in, H_in, W_in});
     MD_Vec<double> kernel({C_out, C_in, kernel_size, kernel_size});
-    vector<MD_Vec<double> > bs_out(bs);
+    MD_Vec<double> bs_out({bs,C_out, H_out, W_out});
     get_conv_test_data(bs_in, bs_out, kernel);
     // expect_vec
     vector<double> expect_vec_out_data = {126,126,210,210,126,126,210,210,126,126,210,210 };
@@ -379,18 +373,15 @@ void test_compute_conv2d_by_mat_mul_backward(){
 
     // start conv2d 
 
-    compute_conv2d_by_mat_mul(bs_in,  bs_out, kernel, stride, pad);
+    compute_conv2d_by_mat_mul(&bs_in,  &bs_out, &kernel, stride, pad);
 
-    compute_conv2d_by_mat_mul_backward(bs_in,  bs_out, kernel, stride, pad);
+    compute_conv2d_by_mat_mul_backward(&bs_in,  &bs_out, &kernel, stride, pad);
 
 
-    //  kernel.print(" kernel = "); 
-    //  bs_in[0].print(" bs_in = "); 
-    //  bs_out[0].print(" bs_out = "); 
-    for(int i=0; i<bs; CHECK_vector_equal_test_success(expect_vec_out_data, bs_out[i++].data, num2str(__LINE__)));
-    for(int i=0; i<bs; CHECK_vector_equal_test_success(expect_vec_out_diff, bs_out[i++].diff, num2str(__LINE__)));
-    for(int i=0; i<bs; CHECK_vector_equal_test_success(expect_vec_inp_diff, bs_in[i++].diff, num2str(__LINE__)));
-    for(int i=0; i<bs; CHECK_vector_equal_test_success(expect_vec_ker_diff, kernel.diff, __FUNCTION__), i++);
+    CHECK_vector_equal_test_success(expect_vec_out_data, bs_out.data, any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_vec_out_diff, bs_out.diff, any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_vec_inp_diff, bs_in.diff, any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_vec_ker_diff, kernel.diff, __FUNCTION__);
 }
 
 
@@ -398,23 +389,22 @@ void test_compute_conv2d_by_mat_mul_backward(){
 
 
 void test_math_RELU_forward_and_backward(){
-    int BS = 1;
-    vector<MD_Vec<double>> input(BS);
-    input[0].data = {1,2,3,-4, -1, 0};
-    input[0].diff = {0,1,0, 2, -1, 0};
-    input[0].shape= {3,2};
+    MD_Vec<double> input({3, 2});
+    input.data = {1,2,3,-4, -1, 0};
+    input.diff = {0,1,0, 2, -1, 0};
+    input.shape= {3,2};
 
     vector<double> expect_vec_inp_data = {1,2,3,0,0,0};
     vector<double> expect_vec_inp_diff = {0,1,0,0,0,0};
     vector<int> expect_vec_inp_shap = {3,2};
     
-    math_RELU(input);
-    math_RELU_backward(input);
+    math_RELU(&input);
+    math_RELU_backward(&input);
 
 
-    CHECK_vector_equal_test_success(expect_vec_inp_data, input[0].data, num2str(__LINE__));
-    CHECK_vector_equal_test_success(expect_vec_inp_diff, input[0].diff, num2str(__LINE__));
-    CHECK_vector_equal_test_success(expect_vec_inp_shap, input[0].shape, __FUNCTION__);
+    CHECK_vector_equal_test_success(expect_vec_inp_data, input.data, any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_vec_inp_diff, input.diff, any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_vec_inp_shap, input.shape, __FUNCTION__);
 }
 
 
@@ -426,47 +416,41 @@ void test_math_RELU_forward_and_backward(){
 
 void test_compute_fc_by_mat_mul_forward_and_backward(){
     int BS = 1,  C_in = 4,   C_out = 2;
-    cout<<num2str(__LINE__)<<endl;
-    vector<MD_Vec<double>> bs_in(BS);
-    for(int i=0; i<BS; i++){
-        bs_in[i].data = {1, 0,2, 1};
-        bs_in[i].diff = {1,-1,0, 2};
-        bs_in[i].shape= {C_in};
-    }
+    cout<<any2str(__LINE__)<<endl;
+    MD_Vec<double> bs_in({BS, C_in});
+    bs_in.data = {1, 0,2, 1};
+    bs_in.diff = {1,-1,0, 2};
+    bs_in.shape= {BS,  C_in};
 
-    cout<<num2str(__LINE__)<<endl;
+    cout<<any2str(__LINE__)<<endl;
     MD_Vec<double> kernel;
     kernel.data = {1,2,1,0,  2,0, 1,1};
     kernel.diff = {1,0,1,0,  0,0,-1,1};
     kernel.shape= {C_out, C_in};
 
 
-    vector<MD_Vec<double>> bs_out(BS);
-    for(int i=0; i<BS; i++){
-        bs_out[i].data = {0, 2};
-        bs_out[i].diff = {-1,9};
-        bs_out[i].shape= {C_out};
-    }
+    MD_Vec<double> bs_out({BS,C_out});
+    bs_out.data = {0, 2};
+    bs_out.diff = {-1,9};
+    bs_out.shape= {BS,  C_out};
     // expect_vec
-    vector<double> expect_bs_in_data  = bs_in[0].data;
+    vector<double> expect_bs_in_data  = bs_in.data;
     vector<double> expect_bs_in_diff  = {18,-3,8,11};
     vector<double> expect_bs_out_data = {3, 5};
-    vector<double> expect_bs_out_diff = bs_out[0].diff;
+    vector<double> expect_bs_out_diff = bs_out.diff;
     vector<double> expect_kernel_data = kernel.data;
     vector<double> expect_kernel_diff = {0,0,-1,-1,9,0,17,10};
 
-    cout<<num2str(__LINE__)<<endl;
+    cout<<any2str(__LINE__)<<endl;
     // compute_fc_by_mat_mul
-    compute_fc_by_mat_mul(bs_in, bs_out, kernel);
-    compute_fc_by_mat_mul_backward(bs_in, bs_out, kernel);
+    compute_fc_by_mat_mul(&bs_in, &bs_out, &kernel);
+    compute_fc_by_mat_mul_backward(&bs_in, &bs_out, &kernel);
    
-    for(int i=0; i<BS; i++){
-        CHECK_vector_equal_test_success(expect_bs_in_data,  bs_in[i].data,  num2str(__LINE__));
-        CHECK_vector_equal_test_success(expect_bs_in_diff,  bs_in[i].diff,  num2str(__LINE__));
-        CHECK_vector_equal_test_success(expect_bs_out_data, bs_out[i].data, num2str(__LINE__));
-        CHECK_vector_equal_test_success(expect_bs_out_diff, bs_out[i].diff, num2str(__LINE__));
-    }
-    CHECK_vector_equal_test_success(expect_kernel_data, kernel.data,    num2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_bs_in_data,  bs_in.data,  any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_bs_in_diff,  bs_in.diff,  any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_bs_out_data, bs_out.data, any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_bs_out_diff, bs_out.diff, any2str(__LINE__));
+    CHECK_vector_equal_test_success(expect_kernel_data, kernel.data,    any2str(__LINE__));
     CHECK_vector_equal_test_success(expect_kernel_diff, kernel.diff,    __FUNCTION__);
 }
 
@@ -479,39 +463,160 @@ void test_compute_fc_by_mat_mul_forward_and_backward(){
 
 void test_compute_softmax_and_softmax_loss_forward_backward(){
     int C_in_out = 3, BS = 2;
-    vector<MD_Vec<double>> logits(BS);
-    vector<MD_Vec<double>> probs(BS);
-    vector<MD_Vec<double>> labels(BS);
+    MD_Vec<double> logits({BS,  C_in_out});
+    MD_Vec<double> probs({BS,   C_in_out});
+    MD_Vec<double> labels({BS,  C_in_out});
     get_softmax_test_data(logits, probs, labels);
     double loss = 18;
 
-    vector<vector<double>> expect_probs_data  = {{0.10650698,  0.78698611,  0.10650698}, {0.15536238,  0.42231879,  0.42231879}};
-    vector<vector<double>> expect_probs_diff(BS);       for(int i=0; i<BS; expect_probs_diff[i] = probs[i].diff, i++);
-    vector<vector<double>> expect_logits_data(BS);      for(int i=0; i<BS; expect_logits_data[i] = logits[i].data, i++);
-    vector<vector<double>> expect_logits_diff = {{-0.44674651,  0.39349306,  0.05325349},{0.07768119, -0.28884061,  0.21115939}};
-    vector<vector<double>> expect_labels_data(BS);      for(int i=0; i<BS; expect_labels_data[i] = labels[i].data, i++);
-    vector<vector<double>> expect_labels_diff(BS);      for(int i=0; i<BS; expect_labels_diff[i] = labels[i].diff, i++);
+    vector<double> expect_probs_data  = {0.10650698,  0.78698611,  0.10650698,      0.15536238,  0.42231879,  0.42231879};
+    vector<double> expect_probs_diff = probs.diff;
+    vector<double> expect_logits_data= logits.data;
+    vector<double> expect_logits_diff= {-0.44674651,  0.39349306,  0.05325349,     0.07768119, -0.28884061,  0.21115939};
+    vector<double> expect_labels_data = labels.data;
+    vector<double> expect_labels_diff = labels.diff;
     double expect_loss = 1.5507697898355257;
 
-    compute_softmax(logits, probs);
-    compute_softmax_cross_entroy_loss(probs, labels, loss);
-    compute_softmax_cross_entroy_loss_backward(logits, probs, labels);
+    compute_softmax(&logits, &probs);
+    compute_softmax_cross_entroy_loss(&probs, &labels, loss);
+    compute_softmax_cross_entroy_loss_backward(&logits, &probs, &labels);
 
-    for(int i=0; i<BS; i++){
-        CHECK_vector_equal_test_success_by_diff(expect_logits_data[i],  logits[i].data,  num2str(__LINE__));
-        CHECK_vector_equal_test_success_by_diff(expect_logits_diff[i],  logits[i].diff,  num2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff(expect_logits_data,  logits.data,  any2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff(expect_logits_diff,  logits.diff,  any2str(__LINE__));
 
-        CHECK_vector_equal_test_success_by_diff(expect_probs_data[i],  probs[i].data,  num2str(__LINE__));
-        CHECK_vector_equal_test_success_by_diff(expect_probs_diff[i],  probs[i].diff,  num2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff(expect_probs_data,  probs.data,  any2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff(expect_probs_diff,  probs.diff,  any2str(__LINE__));
 
-        CHECK_vector_equal_test_success_by_diff(expect_labels_data[i],  labels[i].data,  num2str(__LINE__));
-        CHECK_vector_equal_test_success_by_diff(expect_labels_diff[i],  labels[i].diff,  num2str(__LINE__));
-    }
-    CHECK_vector_equal_test_success_by_diff(vector<double>{expect_loss,}, vector<double>{loss,}, __FUNCTION__);
+    CHECK_vector_equal_test_success_by_diff(expect_labels_data,  labels.data,  any2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff(expect_labels_diff,  labels.diff,  any2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff(vector<double>{expect_loss}, vector<double>{loss}, __FUNCTION__);
 
 }
 
 
+void test_init_by_MDVec(){
+    MD_Vec<double> A({3,3}, 11);
+    MD_Vec<double> B({3,3});
+    //  clock_t start = clock();
+    //  A.copy_to(B);
+    //  print_time_using(start, "===> function: test_init_by_MDVec  copy_to  using time = ");
+    //  MD_Vec<double> B;
+    B.init_by_MDVec(A);
+    A.print("A = ");
+    B.print("B = ");
+    A.CHECK_EQ(B);
+}
+
+
+
+void test_get_random_Labels(){
+    int BS = 3, num_classes = 3;
+    vector<double> labels = get_random_Labels<double>({BS, num_classes});
+    print_vec(labels, " labels = ");
+}
+
+
+void test_copy_vector_from_to(){
+    vector<int> A = {1,2,3,12,13,14};
+    vector<int> B = {210,111,121,112,231,113};
+    //  copy_vector_from_to(A, B, 0, 6);
+    //  CHECK_vector_equal_test_success(A, B, __FUNCTION__);
+
+    copy_vector_from_to(A, B, 3, 7);
+    vector<int> expect_B = {12,13,14,1,231,113};
+    CHECK_vector_equal_test_success(expect_B, B, __FUNCTION__);
+
+}
+
+
+
+
+void test_get_rand_vec(){
+    vector<double> A = get_rand_vec<double>(10, 4, 0.1);
+    print_vec(A, "4, 0.1 = ");
+}
+
+
+
+void test_get_random_data_and_label(){
+    int data_num = 12;   int feature_num = 5;    int class_num = 3;
+    vector<double> X(data_num * feature_num, -1);
+    vector<double> Y(data_num * class_num, -1);
+    get_random_data_and_label<double>(X, Y, data_num, feature_num, class_num);
+    print_vec<double>(X, "X = ");
+    print_vec<double>(Y, "Y = ");
+}
+
+
+
+void test_compute_accuracy(){
+    int data_num = 5;   int feature_num = 2;    int class_num = 2;
+    vector<double> X = {1.1,0.9, 0.2,1.8, 1.6,0.4, 0.9,0.2, 1.1,1.0};
+    vector<double> Y = {0,1,    1,0,      1,0,      1,0,     1,0};
+    print_vec<double>(X, "X = ");
+    print_vec<double>(Y, "Y = ");
+    MD_Vec<double> X_({data_num, feature_num});
+    MD_Vec<double> Y_({data_num, class_num});
+    copy_vector_from_to(X, X_.data, 0, X_.count());
+    copy_vector_from_to(Y, Y_.data, 0, X_.count());
+    double acc = compute_accuracy(&X_, &Y_);
+    cout<<"acc  ="<<acc<<endl;
+}
+
+
+void test_MNIST_read(){
+    vector<double>labels; 
+    read_Mnist_Labels("../../caffe/data/mnist/train-labels-idx1-ubyte", labels); 
+    for (auto iter = labels.begin(); iter != labels.end(); iter++) 
+    {
+        if(iter > labels.begin() + 9) break;
+        cout << *iter << " "; 
+    } 
+
+
+    cout<<endl;
+    vector<double> images;
+    read_Mnist_Images("../../caffe/data/mnist/t10k-images-idx3-ubyte", images);
+    for (int i = 0; i < images.size(); i++)
+    {
+        cout << images[i] << " ";  
+        if(i > 9) break;
+    }
+    cout<<endl<<" success finished "<<__FUNCTION__<<endl;
+}
+
+
+
+void test_label_2_one_hot(){
+    int data_num = 5,   class_num = 3;
+    vector<double> label = {0,1,2,0,2};
+    vector<double> label_one_hot(data_num * class_num);
+    vector<double> expect_vec = {1,0,0, 0,1,0, 0,0,1, 1,0,0, 0,0,1};
+    label_2_one_hot(&label.front(), &label_one_hot.front(), data_num, class_num);
+    CHECK_vector_equal_test_success(expect_vec, label_one_hot, __FUNCTION__);
+}
+
+
+
+void test_compute_dropout_forward_and_backward(){
+    MD_Vec<double> bs_in, bs_out, _;
+    double dropout_ratio = 0.8;
+    vector<double> keep_mask = {0,1,0,0,0,0};
+    get_softmax_test_data(bs_in, bs_out, _);
+    vector<double>expect_bs_in_data  = bs_in.data;
+    vector<double>expect_bs_in_diff  = {0,  bs_out.diff[1] *5    ,0,0,0,0};
+    vector<double>expect_bs_out_data = {0,  bs_in.data[1]  *5    ,0,0,0,0};
+    vector<double>expect_bs_out_diff = bs_out.diff;
+
+
+    compute_dropout<double>(&bs_in, &bs_out, dropout_ratio, &keep_mask.front(), true);
+    compute_dropout_backward<double>(&bs_in, &bs_out, dropout_ratio, &keep_mask.front(), true);
+
+    CHECK_vector_equal_test_success_by_diff<double>(expect_bs_in_data, bs_in.data,      any2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff<double>(expect_bs_in_diff, bs_in.diff,      any2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff<double>(expect_bs_out_data, bs_out.data,    any2str(__LINE__));
+    CHECK_vector_equal_test_success_by_diff<double>(expect_bs_out_diff, bs_out.diff,    __FUNCTION__);
+}
 
 
 
@@ -530,11 +635,20 @@ int main(){
     test_transpose_matrix();
     test_split_string();
     test_putText_to_image();
-    test_num2str();
+    test_any2str();
     test_load_txt_to_vector_string();
     test_mat_mul();
     test_vec_address();
+    test_init_by_MDVec();
+    test_get_random_Labels();
+    test_copy_vector_from_to();
+    test_get_rand_vec();
     test_mat_mul_run_time();
+    test_get_random_data_and_label();
+    test_compute_accuracy();
+    test_MNIST_read();
+    test_label_2_one_hot();
+    test_compute_dropout_forward_and_backward();
 }
 
 

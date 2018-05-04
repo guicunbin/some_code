@@ -38,7 +38,7 @@ string get_type_str(Dtype obj){
 
 
 template <typename Dtype>
-string num2str(Dtype num){
+string any2str(Dtype num){
     // string  to  str also   supported
     std::ostringstream ss;
 	ss << num;
@@ -61,7 +61,7 @@ template <typename Dtype>
 void CHECK_equal(Dtype a,  Dtype b, string commment = ""){
     // support:  char string float double .......... float* double*  int* ........
     if(a == b) return;
-    throw_error("CHECK_equal error !!!  " + commment + ":  "+num2str<Dtype>(a)+" != "+num2str<Dtype>(b));
+    throw_error("CHECK_equal error !!!  " + commment + ":  "+any2str<Dtype>(a)+" != "+any2str<Dtype>(b));
 }
 
 
@@ -72,7 +72,7 @@ void CHECK_equal_by_diff(Dtype a,  Dtype b, string commment = "", double diff = 
     if(get_type_str(a)[0]=='P') throw_error(" not support this Dtype : " + get_type_str(a));
     if(a == b) return;
     if(double(a) - diff < double(b) && double(b) < double(a) + diff) return;
-    throw_error("CHECK_equal error !!!  " + commment + ":  "+num2str<Dtype>(a)+" != "+num2str<Dtype>(b));
+    throw_error("CHECK_equal error !!!  " + commment + ":  "+any2str<Dtype>(a)+" != "+any2str<Dtype>(b));
 }
 
 
@@ -81,7 +81,7 @@ void CHECK_equal_by_diff(Dtype a,  Dtype b, string commment = "", double diff = 
 template <typename Dtype>
 void CHECK_less(Dtype a,  Dtype b, string commment = ""){
    if(a >= b){
-    throw_error("CHECK_less error !!!  " + commment +": "+ num2str<Dtype>(a)+" >= "+num2str<Dtype>(b));
+    throw_error("CHECK_less error !!!  " + commment +": "+ any2str<Dtype>(a)+" >= "+any2str<Dtype>(b));
   }
 }
 
@@ -691,8 +691,8 @@ void img2col_by_kernelmat(Dtype* p_vec3d, Dtype* p_vec2d, vector<int> vec3d_shap
     int W_out = (W_in - kernel_size + 2*pad) / stride + 1; 
     int H_res = C_in * kernel_size * kernel_size;
     int W_res = H_out * W_out;
-    CHECK_equal(H_res, vec2d_shape[0], num2str(__LINE__));
-    CHECK_equal(W_res, vec2d_shape[1], num2str(__LINE__));
+    CHECK_equal(H_res, vec2d_shape[0], any2str(__LINE__));
+    CHECK_equal(W_res, vec2d_shape[1], any2str(__LINE__));
 
     Dtype *p_2d = p_vec2d;
     Dtype *p_3d  = p_vec3d;
@@ -729,8 +729,8 @@ void col2img_by_kernelmat(Dtype* p_vec3d, Dtype* p_vec2d, vector<int> vec3d_shap
     int W_out = (W_in - kernel_size + 2*pad) / stride + 1; 
     int H_res = C_in * kernel_size * kernel_size;
     int W_res = H_out * W_out;
-    CHECK_equal(H_res, vec2d_shape[0], num2str(__LINE__));
-    CHECK_equal(W_res, vec2d_shape[1], num2str(__LINE__));
+    CHECK_equal(H_res, vec2d_shape[0], any2str(__LINE__));
+    CHECK_equal(W_res, vec2d_shape[1], any2str(__LINE__));
 
     Dtype *p_2d = p_vec2d;
     Dtype *p_3d  = p_vec3d;
@@ -860,12 +860,12 @@ void compute_conv2d_by_7_for(vector<MD_Vec<Dtype> > &input,   vector<MD_Vec<Dtyp
     int kernel_size = kernel.shape[3];
     int C_in    = input[0].shape[0],       H_in    = input[0].shape[1],   W_in    = input[0].shape[2];
     int C_out   = output[0].shape[0],      H_out   = output[0].shape[1],  W_out   = output[0].shape[2];
-    //  CHECK_equal(input.size(), output.size(), num2str(__LINE__));
-    //  CHECK_equal(C_out,  kernel.shape[0], num2str(__LINE__));
-    //  CHECK_equal(C_in,   kernel.shape[1], num2str(__LINE__));
-    //  CHECK_equal(kernel.shape[2],    kernel.shape[3],   num2str( __LINE__));
-    //  CHECK_equal(H_out, (H_in - kernel_size + 2* pad) / stride + 1, num2str(__LINE__));
-    //  CHECK_equal(W_out, (W_in - kernel_size + 2* pad) / stride + 1, num2str(__LINE__));
+    //  CHECK_equal(input.size(), output.size(), any2str(__LINE__));
+    //  CHECK_equal(C_out,  kernel.shape[0], any2str(__LINE__));
+    //  CHECK_equal(C_in,   kernel.shape[1], any2str(__LINE__));
+    //  CHECK_equal(kernel.shape[2],    kernel.shape[3],   any2str( __LINE__));
+    //  CHECK_equal(H_out, (H_in - kernel_size + 2* pad) / stride + 1, any2str(__LINE__));
+    //  CHECK_equal(W_out, (W_in - kernel_size + 2* pad) / stride + 1, any2str(__LINE__));
 	int row_A = C_out;
     int col_A = C_in * kernel_size * kernel_size;
     int row_B = C_in * kernel_size * kernel_size;
@@ -882,11 +882,11 @@ void compute_conv2d_by_7_for(vector<MD_Vec<Dtype> > &input,   vector<MD_Vec<Dtyp
                         for(int kh=0; kh < kernel_size; kh ++){
                             for(int kw=0; kw < kernel_size; kw ++){
                                 int h_in = h_out*stride + kh ,   w_in = w_out*stride + kw;
-                                //  CHECK_less(h_in, H_in, num2str(__LINE__));
-                                //  CHECK_less(w_in, W_in, num2str(__LINE__));
-                                //  CHECK_less(bot + h_in * W_in + w_in, &input[bs].data.back() + 1, num2str(__LINE__));
-                                //  CHECK_less(ker + kh * kernel_size + kw, &kernel.data.back() + 1, num2str(__LINE__));
-                                //  CHECK_less(top + h_out * W_out + w_out,  &output[bs].data.back() + 1,num2str(__LINE__));
+                                //  CHECK_less(h_in, H_in, any2str(__LINE__));
+                                //  CHECK_less(w_in, W_in, any2str(__LINE__));
+                                //  CHECK_less(bot + h_in * W_in + w_in, &input[bs].data.back() + 1, any2str(__LINE__));
+                                //  CHECK_less(ker + kh * kernel_size + kw, &kernel.data.back() + 1, any2str(__LINE__));
+                                //  CHECK_less(top + h_out * W_out + w_out,  &output[bs].data.back() + 1,any2str(__LINE__));
                                 *(top + h_out * W_out + w_out) += (*(bot + h_in * W_in + w_in)) * (*(ker + kh * kernel_size + kw));
                             }
                         }
@@ -951,8 +951,8 @@ void compute_fc_by_mat_mul(vector<MD_Vec<Dtype> > &input,   vector<MD_Vec<Dtype>
     int bs = input.size();
     int C_out   = output[0].shape[0];
     int C_in    = input[0].shape[0];
-    CHECK_equal(C_out, kernel.shape[0], num2str(__LINE__));
-    CHECK_equal(C_in,  kernel.shape[1], num2str(__LINE__));
+    CHECK_equal(C_out, kernel.shape[0], any2str(__LINE__));
+    CHECK_equal(C_in,  kernel.shape[1], any2str(__LINE__));
 	int row_A = C_out;
     int col_A = C_in;
     int row_B = C_in;
@@ -974,8 +974,8 @@ void compute_fc_by_mat_mul_backward(vector<MD_Vec<Dtype> > &input,   vector<MD_V
     int bs = input.size();
     int C_out   = output[0].shape[0];
     int C_in    = input[0].shape[0];
-    CHECK_equal(C_out, kernel.shape[0], num2str(__LINE__));
-    CHECK_equal(C_in,  kernel.shape[1], num2str(__LINE__));
+    CHECK_equal(C_out, kernel.shape[0], any2str(__LINE__));
+    CHECK_equal(C_in,  kernel.shape[1], any2str(__LINE__));
     for(int i=0; i<bs; i++){
 		//Dtype *A = &kernel.data[0], *B = &input[i].data[0], *C = &output[i].data[0];
 		//mat_mul_use_cblas(A, B, C, row_A, col_B, col_A, false, false);
