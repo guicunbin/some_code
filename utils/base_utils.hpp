@@ -848,7 +848,4 @@ void get_random_data_and_label(vector<Dtype> &X, vector<Dtype> &Y,  int data_num
 
 
 
-
-
-
 #endif
