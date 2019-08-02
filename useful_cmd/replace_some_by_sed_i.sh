@@ -20,7 +20,8 @@ echo "==> before sed "
 grep -rn "${old_str}" ${search_path}
 
 echo -e "\n\n sed -i ......"
-sed -ip "s|${old_str}|${new_str}|g" $(grep -rl "${old_str}" ${search_path})
+#sed -ip "s|${old_str}|${new_str}|g" $(grep -rl "${old_str}" ${search_path})
+sed -i "s|${old_str}|${new_str}|g" $(grep -rl "${old_str}" ${search_path})
 echo -e "\n\n"
 
 echo "==> after sed "
