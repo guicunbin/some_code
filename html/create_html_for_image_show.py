@@ -14,12 +14,17 @@ def create(image_root, show_port):
     os.system('rm {}'.format(tmp_file))
 
     print("create success !!")
-    cmd_str = "cd {} &&  python3 -m http.server {}".format(image_root, show_port);
-    result = subprocess.check_output(cmd_str, shell=True)
+#   cmd_str = "cd {} &&  python3 -m http.server {}".format(image_root, show_port);
+    cmd_str = "cd {} &&  python -m SimpleHTTPServer {}".format(image_root, show_port);
+    result = subprocess.Popen(cmd_str, shell=True)
+    try:
+        while 1:
+            pass
+    except KeyboardInterrupt:
+        result.kill()
+        print('\n\n\n>  closed the show_port : {}\n\n\n\n'.format(show_port))
+        
 
-#   os.system(cmd)
-#   res = os.popen(cmd);
-#   print(res.readlines());
 
 
 fire.Fire(create)
