@@ -23,8 +23,10 @@ def get_img_list(p):
 
 
 def resize_one(p):
-    if(p.endswith(img_suffix)):
+    if(p and p.endswith(img_suffix)):
         img = cv2.imread(p);
+        if (img.shape[:2] == (size, size)):
+            return;
         img = cv2.resize(img, (size, size))
         cv2.imwrite(p, img);
     
