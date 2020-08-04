@@ -6,7 +6,7 @@ def delete(root_path):
     for fil in os.listdir(root_path):
         fil_full = '{}/{}'.format(root_path, fil)
         if(fil == 'index.html'): 
-            cmd = 'rm -r {}'.format(fil_full)
+            cmd = 'rm -rf {}'.format(fil_full)
             print(cmd)
             os.system(cmd)
         elif(os.path.isdir(fil_full)):

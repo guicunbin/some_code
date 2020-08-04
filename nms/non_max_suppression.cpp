@@ -9,7 +9,7 @@
 #include<assert.h>
 #include<algorithm>
 #include<utility>
-#include"../../utils/utils.hpp"
+#include"../utils/utils.hpp"
 
 
 static bool my_comp(pair<vector<float>,float> a,  pair<vector<float>,float> b){
@@ -48,8 +48,11 @@ vector<vector<float>> nms(vector<vector<float>> boxes_yxyx, vector<float>scores,
             float x2 = min(bbox[3], pick[3]);
             //  print_vec(bbox, "bbox = ");
             float S_inter = (x2 - x1) * (y1 - y2);
-            float S_outer = (bbox[3] - bbox[1])*(bbox[0] - bbox[2]) + (pick[3] - pick[1])*(pick[0] - pick[2]) + S_inter;
-            if(S_inter <=0 ||  S_inter / S_outer < IOU_min){
+            //float S_outer = (bbox[3] - bbox[1])*(bbox[0] - bbox[2]) + (pick[3] - pick[1])*(pick[0] - pick[2]) - S_inter;
+            float S_outer = (bbox[3] - bbox[1])*(bbox[0] - bbox[2]) + (pick[3] - pick[1])*(pick[0] - pick[2]) - S_inter;
+            float IOU_value =  S_inter / S_outer;
+            cout<<"IOU_value = "<<IOU_value<<endl;
+            if(S_inter <=0 ||  IOU_value < IOU_min){
                 next_boxes_yxyx.push_back(bbox);
             }
         }
@@ -63,10 +66,17 @@ vector<vector<float>> nms(vector<vector<float>> boxes_yxyx, vector<float>scores,
 
 
 int main(){
-    vector<vector<float>> Faked_bboxes_yxyx = {   {2, 0,  1, 1},  {2, 0,  0, 1}, {2, 0.5, 1, 1}, {2, 0.5, 1, 1.5}, 
-                                                  {2, 0.5,0, 3},  {2, 0.6,0, 4}, {2,0.7, 0,4.5}, {3, 1.1, 0, 5.6}};
+    //vector<vector<float>> Faked_bboxes_yxyx = {   {2, 0,  1, 1},  {2, 0,  0, 1}, {2, 0.5, 1, 1}, {2, 0.5, 1, 1.5}, 
+    //                                              {2, 0.5,0, 3},  {2, 0.6,0, 4}, {2,0.7, 0,4.5}, {3, 1.1, 0, 5.6}};
+
+
+    vector<vector<float>> Faked_bboxes_yxyx = {   {21, 10,  12, 12},  {25, 5,  3, 15}, {27, 5, 10, 15}, {20, 5,  1, 15}, 
+                                                  {21, 15,  1,  30},  {26, 6,  6, 40}, {24, 7, 3,  35}, {30, 11, 0, 56}};
+
+
+
     vector<float> scores = {0.5, 0.3, 1, 0.8, 0.2, 0.14, 1, 0.99};
-    float IOU_min = 0.2;
+    float IOU_min = 0.24;
     vector<vector<float>> pickes =  nms(Faked_bboxes_yxyx, scores, IOU_min);
 
     cout<<"bboxes = "<<endl;

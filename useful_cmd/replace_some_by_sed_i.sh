@@ -17,7 +17,9 @@ echo "new_str=$3"
 
 
 echo "==> before sed "
-grep -rn "${old_str}" ${search_path}
+grep -rn "${old_str}" ${search_path} | head -3;
+num=`grep -rn "${old_str}" ${search_path} | wc -l`;
+echo -e "find  $num"
 
 echo -e "\n\n sed -i ......"
 #sed -ip "s|${old_str}|${new_str}|g" $(grep -rl "${old_str}" ${search_path})
@@ -25,4 +27,6 @@ sed -i "s|${old_str}|${new_str}|g" $(grep -rl "${old_str}" ${search_path})
 echo -e "\n\n"
 
 echo "==> after sed "
-grep -rn "${old_str}" ${search_path}
+grep -rn "${old_str}" ${search_path} | head -3;
+num=`grep -rn "${old_str}" ${search_path} | wc -l`;
+echo -e "find  $num"
